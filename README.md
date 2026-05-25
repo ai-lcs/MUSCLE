@@ -20,3 +20,21 @@ This repository provides the code for  ''MUSCLE: A New Perspective to Multi-scal
 * Kvasir2: https://datasets.simula.no/kvasir
 * Chaoyang: https://bupt-ai-cz.github.io/HSA-NRL
 * CheXpert: https://stanfordmlgroup.github.io/competitions/chexpert
+
+
+## Citation
+
+If you find our work useful, please cite the following paper:
+
+```
+@ARTICLE{11174067,
+author={Qiu, Junlai and Cao, Junyue and Huang, Yawen and Zhu, Ziwei and Wang, Fubo and Lu, Cheng and Li, Yuexiang and Zheng, Yefeng},
+journal={IEEE Transactions on Medical Imaging}, 
+title={MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence}, 
+year={2026},
+volume={45},
+number={3},
+pages={893-905},
+doi={10.1109/TMI.2025.3612188}
+}
+```
