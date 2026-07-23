@@ -1,0 +1,73 @@
+{
+  "material_passport": {
+    "id": "MUSCLE-DERMAMNIST-1784819788",
+    "type": "Experiment Result",
+    "status": "COMPLETED",
+    "verification_status": "VERIFIED_LIGHTWEIGHT_WORKFLOW"
+  },
+  "scope": "Lightweight proxy-method smoke test; not a paper-table reproduction.",
+  "run_date": "2026-07-23",
+  "environment": {
+    "python": "3.11.9",
+    "pytorch": "2.11.0+cpu",
+    "device": "cpu",
+    "threads": 4
+  },
+  "configuration": {
+    "seed": 1234,
+    "image_size": 256,
+    "batch_size": 8,
+    "baseline_epochs": 3,
+    "muscle_epochs": 3,
+    "train_samples": 224,
+    "val_samples": 70,
+    "test_samples": 140,
+    "learning_rate": 0.01,
+    "momentum": 0.9,
+    "weight_decay": 0.0001,
+    "scheduler": "poly"
+  },
+  "integrity": {
+    "data_md5": "b70a2f5635c6199aeaa28c31d7202e1f",
+    "pretrained_weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+  },
+  "test_results": {
+    "baseline": {
+      "accuracy": 0.65,
+      "macro_sensitivity": 0.20233029381965553,
+      "macro_specificity": 0.8929689440993789,
+      "macro_precision": 0.14564748657675558,
+      "macro_f1": 0.16650858244347214
+    },
+    "muscle": {
+      "accuracy": 0.6714285714285714,
+      "macro_sensitivity": 0.14285714285714285,
+      "macro_specificity": 0.8571428571428571,
+      "macro_precision": 0.09591836734693877,
+      "macro_f1": 0.11477411477411478,
+      "mean_uncertainty": 0.5002627841063908
+    }
+  },
+  "mechanism_checks": {
+    "evidence_view_count": 4,
+    "evidence_shapes": {
+      "0": [8, 7],
+      "1": [8, 7],
+      "2": [8, 7],
+      "3": [8, 7]
+    },
+    "aggregate_shape": [8, 7],
+    "minimum_evidence": 0.09807730466127396,
+    "backbone_max_gradient": 0.0,
+    "fusion_max_gradient": 0.24947884678840637,
+    "backbone_parameters_unchanged": true,
+    "fusion_parameters_changed": true
+  },
+  "elapsed_seconds": 121.9230706691742,
+  "interpretation": {
+    "workflow_completed": true,
+    "paper_results_reproduced": false,
+    "performance_improvement_supported": false,
+    "warning": "MUSCLE predicted every test sample as the majority class in this short, imbalanced run."
+  }
+}

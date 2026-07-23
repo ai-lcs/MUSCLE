@@ -40,10 +40,12 @@ datasets_data/
 
 # 训练输出、日志和可视化记录
 save_dir/
+outputs/
 runs/
 logs/
 log/
 result_csv/
+experiments/**/artifacts/
 *.log
 events.out.tfevents.*
 
