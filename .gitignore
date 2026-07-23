@@ -1,0 +1,66 @@
+# Python 缓存与虚拟环境
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.venv-*/
+venv/
+env/
+
+# 编辑器与操作系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地配置与密钥
+.env
+.env.*
+*.local
+
+# 医学图像数据与下载目录
+data/
+downloads/
+raw_data/
+datasets_data/
+*.dcm
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.h5
+*.hdf5
+
+# 模型权重与训练检查点
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# 训练输出、日志和可视化记录
+save_dir/
+runs/
+logs/
+log/
+result_csv/
+*.log
+events.out.tfevents.*
+
+# 本地生成的划分和结果表
+train_val_test_info.csv
+*_result.csv
+
+# 论文、导读和大体积压缩包
+*.pdf
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.bak
