@@ -46,6 +46,3 @@ MUSCLE 在该设置下将测试样本全部预测为多数类。Accuracy 的小�
 ## 论文引用
 
 > Qiu, J., Cao, J., Huang, Y., et al. MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence. *IEEE Transactions on Medical Imaging*, 45(3), 893–905, 2026. [https://doi.org/10.1109/TMI.2025.3612188](https://doi.org/10.1109/TMI.2025.3612188)
-
-}
-```
