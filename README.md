@@ -1,6 +1,6 @@
 # MUSCLE：论文阅读与轻量实验记录
 
-本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原始实现的基础上，我补充了中文方法笔记，并用 DermaMNIST-64 和 ResNet18 进行了一次小规模两阶段实验。
+本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原始实现的基础上，我补充了一些小的笔记，并用 DermaMNIST-64 和 ResNet18 进行了一次小规模两阶段实验。
 
 ## 方法概述
 
@@ -47,15 +47,5 @@ MUSCLE 在该设置下将测试样本全部预测为多数类。Accuracy 的小�
 
 > Qiu, J., Cao, J., Huang, Y., et al. MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence. *IEEE Transactions on Medical Imaging*, 45(3), 893–905, 2026. [https://doi.org/10.1109/TMI.2025.3612188](https://doi.org/10.1109/TMI.2025.3612188)
 
-```bibtex
-@ARTICLE{11174067,
-  author={Qiu, Junlai and Cao, Junyue and Huang, Yawen and Zhu, Ziwei and Wang, Fubo and Lu, Cheng and Li, Yuexiang and Zheng, Yefeng},
-  journal={IEEE Transactions on Medical Imaging},
-  title={MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence},
-  year={2026},
-  volume={45},
-  number={3},
-  pages={893-905},
-  doi={10.1109/TMI.2025.3612188}
 }
 ```
