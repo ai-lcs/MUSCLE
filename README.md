@@ -1,76 +1,51 @@
-# MUSCLE 中文学习与轻量复现记录
+# MUSCLE：论文阅读与轻量实验记录
 
-这是我用于学习论文 **MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence** 的个人 fork。
+本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原始实现的基础上，我补充了中文方法笔记，并用 DermaMNIST-64 和 ResNet18 进行了一次小规模两阶段实验。
 
-MUSCLE 面向医学图像分类。医学图像中的各种乱七八糟的信息可能大小不同、分布零散，网络只使用最后一层特征时，可能遗漏浅层保留的纹理和局部信息。
+## 方法概述
 
-论文采用的主线可以压缩成：
-
-```text
-先训练普通骨干网络
-→ 冻结骨干网络
-→ 从多个阶段提取不同尺度的特征
-→ 使用 MAFC 从通道、高度、宽度三个方向压缩特征
-→ 每个尺度产生分类证据和不确定性
-→ 聚合多个尺度的意见
-→ 得到最终分类结果
-```
-
-MUSCLE 支持三类骨干网络：
-
-- ResNet
-- VanillaNet
-- Swin Transformer
-
-已完成的轻量实验入口：
-
-- [DermaMNIST-64 + ResNet18 轻量流程验证](experiments/dermamnist_resnet18/README.md)
-
-当前尚未完成：
-
-- 完整 DermaMNIST 训练；
-- 20+10 epoch 短训练；
-- 论文原始数据集和表格指标复现。
+MUSCLE 用于医学图像分类。它从骨干网络的多个阶段提取特征，通过 Multi-Axis Feature Compression（MAFC）分别压缩通道、高度和宽度方向的信息，再为各尺度生成分类证据。第二阶段加载已经训练好的骨干网络并冻结其参数，只更新多尺度压缩与证据融合模块。
 
 ```text
-MUSCLE/
-├─ datasets/                    五套论文数据集的读取与增强
-├─ losses/                      证据损失与一致性损失
-├─ networks/
-│  ├─ classification/          三类骨干网络及其 MUSCLE 版本
-│  └─ net_factory_cls.py       根据参数选择模型
-├─ main.py                     训练、验证、测试总入口
-├─ utils.py                    指标计算与结果保存
-├─ docs/                       本 fork 新增的中文学习文档
-├─ LICENSE                     原作者 MIT 许可证
-└─ README.md                   当前中文入口
+输入图像
+  → 骨干网络的多阶段特征
+  → MAFC 三轴特征压缩
+  → 各尺度分类证据
+  → 证据聚合与不确定性估计
+  → 分类结果
 ```
 
-## 论文使用的数据集
+原始代码包含 ResNet、VanillaNet 和 Swin Transformer 三类骨干网络，并提供 ISIC 2018、APTOS 2019、KvasirV2、Chaoyang 与 CheXpert 的数据读取代码。
 
-- [ISIC 2018](https://challenge.isic-archive.com/landing/2018/)
-- [APTOS 2019](https://www.kaggle.com/competitions/aptos2019-blindness-detection)
-- [KvasirV2](https://datasets.simula.no/kvasir)
-- [Chaoyang](https://bupt-ai-cz.github.io/HSA-NRL)
-- [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert)
+## 仓库内容
 
-数据集体积较大，而且可能有各自的使用条件。本仓库不上传这些数据。
-
-## 复现层级
-
-| 层级 | 可以证明什么 |
+| 路径 | 内容 |
 |---|---|
-| 环境检查 | 依赖、轻量数据和普通模型前向计算可用 |
-| 轻量 smoke test | 两阶段训练、checkpoint、骨干冻结和证据支路能够运行 |
-| 代理数据短训练 | 在小型代理数据上观察 baseline 与 MUSCLE 的趋势 |
-| 论文数据正式实验 | 在对齐数据、模型和训练设置后比较结果 | 
+| `datasets/` | 五套医学图像数据集的读取与增强 |
+| `networks/` | 骨干网络及其 MUSCLE 版本 |
+| `losses/` | 证据分类损失与尺度一致性损失 |
+| `main.py` | 训练、验证和测试入口 |
+| [`docs/代码结构.md`](docs/代码结构.md) | 代码模块与调用关系 |
+| [`docs/论文方法与代码对应.md`](docs/论文方法与代码对应.md) | 论文概念在代码中的位置 |
+| [`docs/实验范围与设置.md`](docs/实验范围与设置.md) | 论文设置与轻量实验的差异 |
+| [`experiments/dermamnist_resnet18/`](experiments/dermamnist_resnet18/README.md) | DermaMNIST-64 + ResNet18 实验代码与记录 |
 
-## 原论文与引用
+## 轻量实验结果
 
-论文信息：
+轻量实验采用固定随机种子，从 DermaMNIST-64 中抽取 224 个训练样本、70 个验证样本和 140 个测试样本，在 CPU 上分别训练 ResNet18 baseline 与冻结骨干的 MUSCLE 各 3 个 epoch。实验验证了 checkpoint 加载、骨干冻结、四尺度非负 evidence 以及融合模块参数更新。
 
-> Qiu, J., Cao, J., Huang, Y., et al. MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence. IEEE Transactions on Medical Imaging, 45(3), 893-905, 2026.
-> DOI: [10.1109/TMI.2025.3612188](https://doi.org/10.1109/TMI.2025.3612188)
+| 模型 | Accuracy | Macro-F1 |
+|---|---:|---:|
+| ResNet18 baseline | 0.6500 | 0.1665 |
+| ResNet18 + MUSCLE | 0.6714 | 0.1148 |
+
+MUSCLE 在该设置下将测试样本全部预测为多数类。Accuracy 的小幅上升来自类别分布，而 Macro-F1 下降。因此，这组结果只说明两阶段代码链路可以运行，不能作为模型性能提升或论文结果复现的依据。完整记录见 [`RESULTS.md`](experiments/dermamnist_resnet18/RESULTS.md)。
+
+数据集、预训练权重、checkpoint 和论文 PDF 未上传至仓库。
+
+## 论文引用
+
+> Qiu, J., Cao, J., Huang, Y., et al. MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence. *IEEE Transactions on Medical Imaging*, 45(3), 893–905, 2026. [https://doi.org/10.1109/TMI.2025.3612188](https://doi.org/10.1109/TMI.2025.3612188)
 
 ```bibtex
 @ARTICLE{11174067,
