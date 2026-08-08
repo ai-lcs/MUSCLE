@@ -2,18 +2,13 @@
 
 本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。原作者的核心代码没有改动。本 fork 补充了三份中文整理，并用 DermaMNIST-64 和 ResNet18 做了一次小规模两阶段流程测试。这项测试只用于确认主要代码环节能够运行，不代表复现了论文实验结果。
 
+![我的 MUSCLE 学习与验证过程](docs/images/muscle-study-workflow.png)
+
 ## 方法概述
 
 我目前对这篇论文的理解是：医学图像中的病变大小和分布可能不同，只使用网络最后一层的特征容易漏掉一部分局部信息。MUSCLE 从骨干网络的多个阶段提取特征，通过 Multi-Axis Feature Compression（MAFC）分别处理通道、高度和宽度方向的信息，再让不同尺度产生分类 evidence 并进行聚合。这里的 evidence 是模型对各类别给出的支持量，不是医学上的临床证据。
 
-```text
-输入图像
-  → 骨干网络的多阶段特征
-  → MAFC 三轴特征压缩
-  → 各尺度分类证据
-  → 证据聚合与不确定性估计
-  → 分类结果
-```
+![MUSCLE 论文方法主线](docs/images/muscle-method-overview.png)
 
 论文采用两阶段训练：先训练普通骨干网络，再加载这份参数并冻结骨干，只训练 MUSCLE 新增的多尺度模块。原始代码包含 ResNet、VanillaNet 和 Swin Transformer 三类骨干网络。
 
