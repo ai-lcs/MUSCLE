@@ -1,10 +1,4 @@
 {
-  "material_passport": {
-    "id": "MUSCLE-DERMAMNIST-1784819788",
-    "type": "Experiment Result",
-    "status": "COMPLETED",
-    "verification_status": "VERIFIED_LIGHTWEIGHT_WORKFLOW"
-  },
   "scope": "Lightweight proxy-method smoke test; not a paper-table reproduction.",
   "run_date": "2026-07-23",
   "environment": {

@@ -1,0 +1,8 @@
+# Minimal top-level packages used by this lightweight CPU entry.
+# Install the CPU builds of torch and torchvision from the official PyTorch index.
+
+torch==2.11.0
+torchvision==0.26.0
+numpy==1.26.4
+Pillow==10.4.0
+scikit-learn==1.8.0

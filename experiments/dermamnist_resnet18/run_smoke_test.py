@@ -496,12 +496,6 @@ def main() -> int:
 
     datasets, loaders = create_loaders(args)
     run_config = {
-        "material_passport": {
-            "id": f"MUSCLE-DERMAMNIST-{int(started_at)}",
-            "type": "Code Experiment",
-            "status": "RUNNING",
-            "verification_status": "EXECUTING",
-        },
         "scope": "Lightweight proxy-method smoke test; not a paper-table reproduction.",
         "device": "cpu",
         "python": sys.version.split()[0],
@@ -525,9 +519,15 @@ def main() -> int:
     if args.verify_only:
         verification = verify_one_batch(args, loaders["train"])
         verification["elapsed_seconds"] = time.time() - started_at
+        expected_output_shape = verification["baseline_output_shape"]
         verification["passed"] = bool(
             verification["baseline_output_shape"][1] == NUM_CLASSES
             and verification["evidence_view_count"] == 4
+            and all(
+                shape == expected_output_shape
+                for shape in verification["evidence_shapes"].values()
+            )
+            and verification["aggregate_shape"] == expected_output_shape
             and verification["minimum_evidence"] >= 0
             and verification["backbone_max_gradient"] == 0
             and verification["fusion_max_gradient"] > 0
@@ -650,12 +650,6 @@ def main() -> int:
     )
 
     result = {
-        "material_passport": {
-            "id": run_config["material_passport"]["id"],
-            "type": "Experiment Result",
-            "status": "COMPLETED",
-            "verification_status": "VERIFIED_LIGHTWEIGHT_WORKFLOW",
-        },
         "scope": run_config["scope"],
         "baseline": {
             "history": baseline_history,
