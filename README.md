@@ -65,40 +65,10 @@ MUSCLE 先训练普通骨干网络，再加载第一阶段 checkpoint 并冻结�
 
 更详细的调用关系见 [代码结构](docs/代码结构.md)，论文公式与公开实现的对应见 [论文方法与代码对应](docs/论文方法与代码对应.md)。
 
-## 复现实验入口
-
-安装 GPU 环境时，先安装与显卡匹配的 PyTorch，再安装实验入口的其余依赖：
-
-```powershell
-python -m pip install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
-python -m pip install -r experiments/paper_resnet50/requirements-gpu.txt
-```
-
-以下命令以 KvasirV2 为例；`<DATA_ROOT>` 与 `<OUTPUT_ROOT>` 应替换为本机目录。三套数据采用同一组训练参数。
-
-```powershell
-python -m experiments.paper_resnet50 validate-data `
-  --dataset kvasirv2 --data-root <DATA_ROOT> --output-root <OUTPUT_ROOT>
-
-python -m experiments.paper_resnet50 run `
-  --dataset kvasirv2 --data-root <DATA_ROOT> --output-root <OUTPUT_ROOT> `
-  --stage baseline --baseline-epochs 10 --muscle-epochs 5 `
-  --batch-size 16 --workers 4 --amp --resume auto
-
-python -m experiments.paper_resnet50 run `
-  --dataset kvasirv2 --data-root <DATA_ROOT> --output-root <OUTPUT_ROOT> `
-  --stage muscle --baseline-epochs 10 --muscle-epochs 5 `
-  --batch-size 16 --workers 4 --amp --resume auto
-
-python -m experiments.paper_resnet50 analyze-uncertainty `
-  --dataset kvasirv2 --data-root <DATA_ROOT> --output-root <OUTPUT_ROOT> `
-  --batch-size 16 --workers 4 --amp
-```
-
 更完整的目录要求、参数和输出文件说明见 [`experiments/paper_resnet50/README.md`](experiments/paper_resnet50/README.md)。
 
 ## 复现边界
 
-这项工作已经超过代理数据上的流程验证：三套数据均来自论文正式实验，使用完整数据和 ResNet-50，且两阶段 checkpoint、冻结、指标与不确定性链路都经过实际运行。它仍然属于消费级 GPU 条件下的短轮复现，尚未覆盖论文的 500+200 epoch、多随机种子、VanillaNet-5、Swin-T、Chaoyang、CheXpert、消融实验和统计显著性分析。
+这项工作已经超过代理数据上的流程验证：三套数据均来自论文正式实验，使用完整数据和 ResNet-50，且两阶段 checkpoint、冻结、指标与不确定性链路都经过实际运行。该复现为算力资源不足条件下的短轮复现，尚未覆盖论文的 500+200 epoch、多随机种子、VanillaNet-5、Swin-T、Chaoyang、CheXpert、消融实验和统计显著性分析。
 
-原始图像、数据压缩包、论文 PDF、预训练权重、checkpoint、manifest、逐样本预测、完整日志和虚拟环境均保存在本机私有工作区，不进入公开 Git 仓库。GitHub 只保留可复查的代码、配置说明和脱敏的小体积汇总结果。
+论文原文，原始数据等都仅保存在本地，未同步至github。
