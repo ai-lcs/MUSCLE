@@ -1,5 +1,7 @@
 # DermaMNIST-64 + ResNet18 两阶段轻量实验
 
+> 本目录是 2026-07-23 完成的早期 CPU smoke test，用于证明最小两阶段链路。当前仓库的主要成果已经升级为三套论文正式数据、ResNet-50 和完整数据的 10+5 epoch 复现，见 [三数据集实验入口](../paper_resnet50/README.md)。本目录保留为工程演进记录，不再代表仓库当前复现层级。
+
 本目录在不修改原仓库核心算法的前提下，将 DermaMNIST-64 与 ResNet18 接入 MUSCLE，用于检查两阶段训练链路在 Windows CPU 环境下能否运行。实验复用了 `ResNet.py`、`ResNet_Multi_Scale.py` 和 `losses.py`。
 
 ## 实验设计
