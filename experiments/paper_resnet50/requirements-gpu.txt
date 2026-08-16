@@ -1,0 +1,11 @@
+# Install torch==2.11.0 and torchvision==0.26.0 first from the official cu128 index.
+albumentations==2.0.8
+albucore==0.0.24
+matplotlib==3.10.5
+numpy==1.26.4
+opencv-python-headless==4.11.0.86
+pandas==2.2.2
+scikit-learn==1.8.0
+simsimd==6.5.16
+stringzilla==4.6.2
+tqdm==4.67.1
