@@ -1,14 +1,12 @@
 # MUSCLE：三套正式数据集上的 ResNet-50 两阶段复现
 
-本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原作者核心网络、损失函数与数据接口的基础上，本 fork 新增了适用于 Windows 与单卡消费级 GPU 的实验入口，并在 KvasirV2、ISIC 2018 和 APTOS 2019 三套论文数据集上完成了全量数据的 ResNet-50 两阶段短轮复现。
+本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原作者核心网络、损失函数与数据接口的基础上，本 fork 新增了在 KvasirV2、ISIC 2018 和 APTOS 2019 三套论文数据集上完成了全量数据的 ResNet-50 两阶段短轮复现，区别于上周的仅仅是少轮次的训练。
 
-这里的“复现”指数据审计、baseline 训练、checkpoint 传递、MUSCLE 训练、冻结检查、指标计算和不确定性分析已经形成可重复的完整链路。训练轮数为 baseline 10 epoch、MUSCLE 5 epoch，明显少于论文的 500+200 epoch，因此结果用于验证公开方法和代码行为，不等同于论文 Table IV 的完整数值复现。
+这里的“复现”指数据审计、baseline 训练、checkpoint 传递、MUSCLE 训练、冻结检查、指标计算和不确定性分析已经形成可重复的完整链路。训练轮数为 baseline 10 epoch、MUSCLE 5 epoch，由于电脑性能限制，训练明显少于论文的 500+200 epoch，故主要目的是用于验证公开方法和代码行为。
 
 ## 我的复现工作
 
 ![从论文理解到三数据集复现：我的 MUSCLE 工作](docs/images/muscle-reproduction-workflow.png)
-
-上图概括了本 fork 从论文与代码梳理、正式数据审计到两阶段训练和机制验证的完整工作链。绿色卡片列出已经形成证据的部分，橙色卡片保留短轮实验的结果边界。
 
 ## 当前完成情况
 
@@ -36,7 +34,7 @@
 | APTOS 2019 | ResNet-50 baseline | 0.8172 | 0.6164 | 0.9516 | 0.7334 | 0.6422 |
 | APTOS 2019 | ResNet-50 + MUSCLE | 0.8117 | 0.5916 | 0.9470 | 0.7233 | 0.6250 |
 
-不确定性实验采用论文 Fig. 6–7 所列的高斯噪声方差 `0、10、100、1000、10000`。三套数据在最高噪声下均表现为 ACC 下降、平均不确定性上升；错误预测的不确定性也均高于正确预测。APTOS 的均值和中位数随噪声严格单调上升，ISIC 的均值单调上升但中位数存在波动，KvasirV2 只在高噪声区间出现清楚上升。因此，这部分结果对论文中的不确定性机制提供了分层次的支持，而不是三套数据都“完整复现”了相同趋势。
+不确定性实验采用论文 Fig. 6–7 所列的高斯噪声方差 `0、10、100、1000、10000`。三套数据在最高噪声下均表现为 ACC 下降、平均不确定性上升；错误预测的不确定性也均高于正确预测。APTOS 的均值和中位数随噪声严格单调上升，ISIC 的均值单调上升但中位数存在波动，KvasirV2 只在高噪声区间出现清楚上升。因此，这部分结果对论文中的不确定性机制提供了分层次的支持。
 
 | 数据集 | 干净 ACC | 方差 10000 ACC | 平均不确定性：干净 → 方差 10000 | 以不确定性识别错误的 AUROC |
 |---|---:|---:|---:|---:|
