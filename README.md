@@ -98,22 +98,3 @@ python -m experiments.paper_resnet50 analyze-uncertainty `
 这项工作已经超过代理数据上的流程验证：三套数据均来自论文正式实验，使用完整数据和 ResNet-50，且两阶段 checkpoint、冻结、指标与不确定性链路都经过实际运行。它仍然属于消费级 GPU 条件下的短轮复现，尚未覆盖论文的 500+200 epoch、多随机种子、VanillaNet-5、Swin-T、Chaoyang、CheXpert、消融实验和统计显著性分析。
 
 原始图像、数据压缩包、论文 PDF、预训练权重、checkpoint、manifest、逐样本预测、完整日志和虚拟环境均保存在本机私有工作区，不进入公开 Git 仓库。GitHub 只保留可复查的代码、配置说明和脱敏的小体积汇总结果。
-
-## 论文引用
-
-> Qiu, J., Cao, J., Huang, Y., et al. MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence. *IEEE Transactions on Medical Imaging*, 45(3), 893–905, 2026. [https://doi.org/10.1109/TMI.2025.3612188](https://doi.org/10.1109/TMI.2025.3612188)
-
-```bibtex
-@ARTICLE{11174067,
-  author={Qiu, Junlai and Cao, Junyue and Huang, Yawen and Zhu, Ziwei and Wang, Fubo and Lu, Cheng and Li, Yuexiang and Zheng, Yefeng},
-  journal={IEEE Transactions on Medical Imaging},
-  title={MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence},
-  year={2026},
-  volume={45},
-  number={3},
-  pages={893--905},
-  doi={10.1109/TMI.2025.3612188}
-}
-```
-
-原始代码采用 [MIT License](LICENSE)。本 fork 的新增内容用于论文研读和复现实验记录，不代表原作者对本文档或实验结论进行了审核。
