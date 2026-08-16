@@ -4,6 +4,12 @@
 
 这里的“复现”指数据审计、baseline 训练、checkpoint 传递、MUSCLE 训练、冻结检查、指标计算和不确定性分析已经形成可重复的完整链路。训练轮数为 baseline 10 epoch、MUSCLE 5 epoch，明显少于论文的 500+200 epoch，因此结果用于验证公开方法和代码行为，不等同于论文 Table IV 的完整数值复现。
 
+## 我的复现工作
+
+![从论文理解到三数据集复现：我的 MUSCLE 工作](docs/images/muscle-reproduction-workflow.png)
+
+上图概括了本 fork 从论文与代码梳理、正式数据审计到两阶段训练和机制验证的完整工作链。绿色卡片列出已经形成证据的部分，橙色卡片保留短轮实验的结果边界。
+
 ## 当前完成情况
 
 三套数据均使用完整训练、验证和测试划分，统一采用 ResNet-50、256×256 输入、随机种子 1234、batch size 16、AMP 和相同的 10+5 epoch 配置。实验环境为 Windows、PyTorch 2.11.0+cu128 和 NVIDIA GeForce RTX 5060 Laptop GPU。
