@@ -394,7 +394,7 @@ def make_transform(train: bool, image_size: int = 256) -> A.Compose:
                         A.Blur(blur_limit=5, p=1),
                         A.GaussNoise(p=1),
                         A.ISONoise(p=1),
-                        A.GaussianBlur(blur_limit=(3, 5), sigma_limit=0, p=1),
+                        A.GaussianBlur(blur_limit=(3, 5), p=1),
                         A.CoarseDropout(
                             num_holes_range=(1, 5),
                             hole_height_range=(5, 20),
