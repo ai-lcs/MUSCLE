@@ -32,6 +32,7 @@ from .engine import (
     trainable_state,
     write_json,
 )
+from .uncertainty import run_uncertainty_analysis
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -72,6 +73,9 @@ def parse_args() -> argparse.Namespace:
     run.add_argument("--weight-decay", type=float, default=0.0001)
     run.add_argument("--annealing-step", type=int, default=50)
     run.add_argument("--resume", choices=["auto", "none"], default="auto")
+    analyze = subparsers.add_parser("analyze-uncertainty")
+    common_parser(analyze)
+    analyze.add_argument("--profile", choices=["b10_m5_bs16_a1"], default="b10_m5_bs16_a1")
     return parser.parse_args()
 
 
@@ -333,6 +337,40 @@ def run(args: argparse.Namespace) -> int:
     return 0
 
 
+def analyze_uncertainty(args: argparse.Namespace) -> int:
+    if not torch.cuda.is_available():
+        raise RuntimeError("uncertainty analysis requires a CUDA GPU")
+    set_reproducibility(args.seed)
+    manifest = ensure_manifest(args)
+    profile_dir = dataset_dir(args) / args.profile
+    baseline_weights = profile_dir / "baseline" / "checkpoints" / "best_ACC_weights.pth"
+    muscle_dir = profile_dir / "muscle"
+    muscle_weights = muscle_dir / "checkpoints" / "best_ACC_weights.pth"
+    result_path = muscle_dir / "result.json"
+    for required in (baseline_weights, muscle_weights, result_path):
+        if not required.is_file():
+            raise FileNotFoundError(required)
+    model = build_muscle(len(manifest["class_names"]), baseline_weights)
+    model.load_state_dict(torch.load(muscle_weights, map_location="cpu", weights_only=True))
+    expected_metrics = json.loads(result_path.read_text(encoding="utf-8"))["test"]
+    run_uncertainty_analysis(
+        dataset=args.dataset,
+        manifest=manifest,
+        data_root=args.data_root,
+        model=model,
+        checkpoint_path=muscle_weights,
+        expected_metrics=expected_metrics,
+        output_dir=muscle_dir / "uncertainty_analysis",
+        repo_root=REPO_ROOT,
+        image_size=args.image_size,
+        batch_size=args.batch_size,
+        workers=args.workers,
+        seed=args.seed,
+        amp=args.amp,
+    )
+    return 0
+
+
 def main() -> int:
     args = parse_args()
     if args.batch_size < 1 or args.accumulation < 1 or args.workers < 0:
@@ -343,6 +381,8 @@ def main() -> int:
         return validate_data(args)
     if args.command == "benchmark":
         return benchmark(args)
+    if args.command == "analyze-uncertainty":
+        return analyze_uncertainty(args)
     return run(args)
 
 

@@ -31,6 +31,12 @@ from experiments.paper_resnet50.engine import (
     table_iv_comparison,
 )
 from experiments.paper_resnet50.__main__ import shared_training_profile
+from experiments.paper_resnet50.uncertainty import (
+    apply_gaussian_noise,
+    compare_replay_metrics,
+    evidence_uncertainty,
+    summarize_uncertainty_trend,
+)
 
 
 class ManifestTests(unittest.TestCase):
@@ -117,6 +123,40 @@ class MetricTests(unittest.TestCase):
         comparison = table_iv_comparison("kvasirv2", "baseline", metrics)
         self.assertIn("Descriptive difference only", comparison["scope"])
         self.assertAlmostEqual(comparison["delta_short_minus_paper"]["ACC"], -0.0206)
+
+
+class UncertaintyTests(unittest.TestCase):
+    def test_zero_noise_is_identity_and_noise_is_deterministic(self):
+        image = np.full((8, 8, 3), 128, dtype=np.uint8)
+        clean = apply_gaussian_noise(image, variance=0, seed=1234, relative_path="a.png")
+        first = apply_gaussian_noise(image, variance=100, seed=1234, relative_path="a.png")
+        second = apply_gaussian_noise(image, variance=100, seed=1234, relative_path="a.png")
+        self.assertTrue(np.array_equal(clean, image))
+        self.assertTrue(np.array_equal(first, second))
+        self.assertFalse(np.array_equal(first, image))
+
+    def test_evidence_uncertainty_matches_dirichlet_formula(self):
+        evidence = torch.tensor([[0.0, 0.0], [1.0, 1.0]])
+        uncertainty = evidence_uncertainty(evidence)
+        self.assertTrue(torch.equal(uncertainty, torch.tensor([1.0, 0.5])))
+
+    def test_replay_comparison_requires_metrics_and_confusion_match(self):
+        expected = {
+            "ACC": 0.5, "SEN": 0.4, "SPE": 0.8, "PRE": 0.3,
+            "Macro-F1": 0.35, "confusion_matrix": [[1, 1], [0, 0]],
+        }
+        self.assertTrue(compare_replay_metrics(expected, expected)["passed"])
+        changed = dict(expected, ACC=0.6)
+        self.assertFalse(compare_replay_metrics(changed, expected)["passed"])
+
+    def test_positive_noise_trend_is_summarized_without_claiming_causality(self):
+        rows = [
+            {"variance": variance, "mean_uncertainty": value, "median_uncertainty": value}
+            for variance, value in zip((0, 10, 100, 1000, 10000), (0.1, 0.2, 0.3, 0.4, 0.5))
+        ]
+        trend = summarize_uncertainty_trend(rows)
+        self.assertTrue(trend["paper_noise_trend_supported"])
+        self.assertTrue(trend["mean_uncertainty_monotonic_non_decreasing"])
 
 
 class CheckpointTests(unittest.TestCase):

@@ -17,6 +17,14 @@ python -m experiments.paper_resnet50 run --dataset kvasirv2 --data-root D:\...\k
 python -m experiments.paper_resnet50 run --dataset kvasirv2 --data-root D:\...\kvasir-dataset-v2 --stage muscle --baseline-epochs 5 --muscle-epochs 3 --resume auto
 ```
 
+完成统一的 `10+5` 短轮训练后，可直接复用 MUSCLE checkpoint 做推理型不确定性验证，
+不更新任何模型参数。命令会复查干净测试集指标，并按论文 Fig. 4、Fig. 6–7 使用
+方差 `0、10、100、1000、10000` 的高斯噪声生成逐样本 CSV、汇总 JSON 和分布图：
+
+```powershell
+python -m experiments.paper_resnet50 analyze-uncertainty --dataset kvasirv2 --data-root D:\...\kvasir-dataset-v2
+```
+
 先对 KvasirV2 benchmark 50 steps。三套合计估时不超过 10 小时才统一用 10+5，
 否则统一用 5+3。显存不足时依次使用 `--batch-size 8 --accumulation 2` 和
 `--batch-size 4 --accumulation 4`。同一轮三套数据必须使用完全相同的 epoch、batch
