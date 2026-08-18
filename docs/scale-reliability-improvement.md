@@ -1,7 +1,5 @@
 # 为什么固定聚合值得改：一个从现有仓库出发的设想
 
-> 这一页讲的是研究设想，不是已经完成的改进。本仓库目前已经观察到问题，但还没有实现可靠性折扣，也没有产生改进后的实验结果。
-
 ## 先看公开代码做了什么
 
 MUSCLE 从 ResNet-50 的四个 stage 取出特征。每个 stage 经过 MAFC 和 `EvidenceCollector` 后，都会产生一组非负 evidence。evidence 越少，模型计算出的 uncertainty 越高。
@@ -109,7 +107,5 @@ ISIC 2018 和 APTOS 2019 没有这么极端，但也出现了越到深层、平�
 
 ## 参考资料
 
-- Qiu et al., [*MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*](https://doi.org/10.1109/TMI.2025.3612188).
+相同第一作者的文章：
 - Qiu et al., [*A Hybrid Framework Bridging CNN and ViT based on Theory of Evidence for Diabetic Retinopathy Grading*](https://arxiv.org/abs/2510.26315).
-- 本仓库的固定聚合实现：[ResNet `TMSL`](../networks/classification/ResNet_Multi_Scale.py#L97-L112)。
-
