@@ -1,14 +1,14 @@
 # 从固定聚合到可信尺度选择：MUSCLE 的一个改进设想
 
-> **当前状态：研究设想，尚未实现，也没有产生改进实验结果。** 这一页面记录的是从论文、后续工作和短轮复现现象中形成的可检验假设，不代表本仓库已经提出或验证了新方法。
+这一页面记录的是从论文、后续工作和短轮复现现象中形成的可检验假设。
 
 ## 问题来自哪里
 
 MUSCLE 的出发点是利用多个阶段的特征：浅层保留纹理和局部细节，深层提供更强的语义信息。各尺度经过 MAFC 和 EvidenceCollector 后形成 evidence、belief 与 uncertainty，再由 TMSL 得到聚合意见。
 
-这里存在一个值得继续追问的问题：模型已经知道不同尺度具有不同的不确定性，但最后的多尺度聚合是否真正做到了“按可靠性选择信息”？公开实现采用固定顺序的两两平均。对四个尺度连续展开后，最终 evidence 中四个阶段的隐含系数分别为 `1/8、1/8、1/4、1/2`。这种设计确实更偏向深层特征，却是由融合位置预先决定的，而不是根据当前样本动态判断某个尺度是否可信。
+这里存在一个问题：模型已经知道不同尺度具有不同的不确定性，但最后的多尺度聚合是否真正做到了“按可靠性选择信息”？公开实现采用固定顺序的两两平均。对四个尺度连续展开后，最终 evidence 中四个阶段的隐含系数分别为 `1/8、1/8、1/4、1/2`。这种设计确实更偏向深层特征，却是由融合位置预先决定的，而不是根据当前样本动态判断某个尺度是否可信。
 
-原论文的尺度消融已经表明，并非所有数据集都能从全部阶段获益。同一团队后续提出的 CNN–ViT 混合框架进一步发现，浅层高不确定性特征可能抵消有用信息，因此只融合两个骨干的最后两个阶段。这个结论与本仓库的短轮观察相互呼应：ISIC 2018 和 APTOS 2019 的 uncertainty 随阶段加深而下降；KvasirV2 前三个阶段接近最大 uncertainty，Stage 4 明显更低。具体数值见[三数据集短轮复现结果](三数据集短轮复现结果.md#四尺度-uncertainty)。这些结果只能说明问题值得研究，不能直接证明某种改进一定有效。
+原论文的尺度消融已经表明，并非所有数据集都能从全部阶段获益。同一团队后续提出的 CNN–ViT 混合框架进一步发现，浅层高不确定性特征可能抵消有用信息，因此只融合两个骨干的最后两个阶段。这个结论与本仓库的短轮观察相互呼应：ISIC 2018 和 APTOS 2019 的 uncertainty 随阶段加深而下降；KvasirV2 前三个阶段接近最大 uncertainty，Stage 4 明显更低。具体数值见[三数据集短轮复现结果](三数据集短轮复现结果.md#四尺度-uncertainty)。
 
 ## 核心设想：尺度可靠性折扣
 
@@ -16,15 +16,6 @@ MUSCLE 的出发点是利用多个阶段的特征：浅层保留纹理和局部�
 
 可靠性可以同时参考两个信号。一个是尺度自身的不确定性，另一个是它与其他尺度判断的一致程度。某个尺度证据不足，或者与其余尺度发生明显冲突时，就减少它对具体类别的支持，并把相应质量转移到“未知”部分；可靠性较高的尺度则保留更多影响。模型由此不再固定地“后面的尺度权重更大”，而是针对每张图像判断当前应该相信哪些尺度。
 
-```mermaid
-flowchart LR
-    A["四个阶段特征"] --> B["MAFC 与 EvidenceCollector"]
-    B --> C["各尺度 opinion 与 uncertainty"]
-    C --> D["可靠性估计：自身不确定性 + 尺度间一致性"]
-    D --> E["低可靠性证据折扣：质量转入未知项"]
-    E --> F["多尺度意见聚合"]
-    F --> G["分类结果与总体不确定性"]
-```
 
 这项设想借鉴了证据理论中的 contextual discounting。相关研究已经在多模态医学图像分割中验证过“先估计来源可靠性、再折扣和融合”的可行性；冲突多视图学习也提供了将意见分歧纳入可靠性估计的思路。它们是方法依据，但任务与 MUSCLE 不同，因此不能当作本设想已经成立的证据。
 
@@ -44,8 +35,6 @@ flowchart LR
 
 ## 参考资料
 
-- Qiu et al., [*MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*](https://doi.org/10.1109/TMI.2025.3612188).
+与MUSCLE相同一作：
 - Qiu et al., [*A Hybrid Framework Bridging CNN and ViT based on Theory of Evidence for Diabetic Retinopathy Grading*](https://arxiv.org/abs/2510.26315).
-- Huang et al., [*Deep Evidential Fusion with Uncertainty Quantification and Contextual Discounting for Multimodal Medical Image Segmentation*](https://arxiv.org/abs/2309.05919).
-- Xu et al., [*Reliable Conflictive Multi-View Learning*](https://arxiv.org/abs/2402.16897).
-- 本仓库的固定聚合实现：[ResNet `TMSL`](../networks/classification/ResNet_Multi_Scale.py#L97-L112)。
+
