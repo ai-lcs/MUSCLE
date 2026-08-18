@@ -1,6 +1,6 @@
 # MUSCLE：三套正式数据集上的 ResNet-50 两阶段复现
 
-本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原作者核心网络、损失函数与数据接口的基础上，本 fork 新增了在 KvasirV2、ISIC 2018 和 APTOS 2019 三套论文数据集上完成了全量数据的 ResNet-50 两阶段短轮复现，区别于上周的仅仅是少轮次的训练。
+本仓库 fork 自 [Q4CS/MUSCLE](https://github.com/Q4CS/MUSCLE)，对应论文 *MUSCLE: A New Perspective to Multi-Scale Fusion for Medical Image Classification Based on the Theory of Evidence*。在保留原作者核心网络、损失函数与数据接口的基础上，本 fork 使用 KvasirV2、ISIC 2018 和 APTOS 2019 三套论文数据集的完整数据，完成了 ResNet-50 baseline → MUSCLE 的统一两阶段短轮复现。
 
 这里的“复现”指数据审计、baseline 训练、checkpoint 传递、MUSCLE 训练、冻结检查、指标计算和不确定性分析已经形成可重复的完整链路。训练轮数为 baseline 10 epoch、MUSCLE 5 epoch，由于电脑性能限制，训练明显少于论文的 500+200 epoch，故主要目的是用于验证公开方法和代码行为。
 
@@ -15,13 +15,19 @@
 
 MUSCLE 的核心思路是：从一个已经训练好的骨干网络（ResNet、VanillaNet 或 Swin Transformer） 上增加一个轻量的多尺度证据融合模块，即从中取出多个阶段的特征，分别压缩并转成分类证据；每个尺度表达“更像哪一类”及“掌握了多少证据”。模型再把这些尺度意见聚合，得到最终分类结果和对应的不确定性。
 
-不同 stage 的 feature 质量是不一样的。
-
 ## 从复现观察到的改进设想
 
-原论文的尺度消融、同一团队的后续工作以及本仓库的短轮观察都说明：不同阶段的证据质量存在明显差异，浅层高不确定性信息有时会削弱深层有效信息。基于这一现象，问题可以概括为“尺度可靠性折扣”，在聚合前同时参考尺度自身的不确定性和尺度间一致性，降低低可靠性证据的影响，把人工选择阶段转化为针对每个样本的自适应可信尺度选择。
+不同 stage 的 feature 质量并不相同，但公开代码的 `TMSL` 采用固定顺序的两两平均。四个尺度连续展开后，最终 evidence 实际为：
 
-这仍是尚未实现和验证的研究设想。具体可见[专题页：从固定聚合到可信尺度选择](docs/scale-reliability-improvement.md)。
+```text
+1/8 × Stage 1 + 1/8 × Stage 2 + 1/4 × Stage 3 + 1/2 × Stage 4
+```
+
+也就是说，Stage 4 固定占一半权重，原因是它最后参加平均，而不是模型判断它对当前图像最可靠。本仓库的短轮结果进一步显示，KvasirV2 的前三个尺度 uncertainty 接近 `1.0`，Stage 4 只有 `0.0693`；ISIC 2018 和 APTOS 2019 也呈现越到深层、平均 uncertainty 越低的趋势。
+
+由此形成的改进设想是“尺度可靠性折扣”：聚合前先看每个尺度自身的不确定性，并参考它与其他尺度的判断是否一致。证据少或与多数尺度冲突的分支少参与融合，可靠分支保留更多影响。它不要求更换更大的骨干，主要改变 `EvidenceCollector` 与最终聚合之间的处理方式。
+
+这仍是尚未实现和验证的研究设想。当前仓库已经完成问题观察，但还没有可靠性折扣代码或改进结果。更通俗的推导、仓库证据和低成本验证方法见[专题页：为什么固定聚合值得改](docs/scale-reliability-improvement.md)。
 
 ## 我的复现工作
 
